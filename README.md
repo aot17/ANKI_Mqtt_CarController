@@ -1,25 +1,24 @@
 # Autonomous Vehicle Traffic Control System
 
 ## Overview
-This project presents an innovative approach to managing traffic for autonomous vehicles using MQTT protocol. The system, built with Java and MQTT, orchestrates the interaction between autonomous vehicles and traffic control mechanisms like traffic lights. It simulates a smart city environment where each vehicle's movement is dynamically adjusted based on traffic signals and emergency situations, providing a glimpse into the future of urban mobility.
+This project is a sophisticated simulation of traffic management for autonomous vehicles using the MQTT protocol. Developed in Java, it illustrates the coordination between autonomous vehicles and traffic control systems like traffic lights. This setup offers a simulated environment for exploring the interaction of smart city elements with autonomous transport.
 
 ## Key Components
 
 ### Red Light Switch
-- Controls traffic lights, alternating signals to manage vehicle flow.
+- Manages traffic lights by alternating signals, effectively controlling the flow of vehicle traffic.
 
 ### Traffic Light Service
-- Monitors and responds to traffic light statuses, ensuring vehicles adhere to signals for safe and efficient travel.
+- Observes traffic light states and manages vehicle behavior accordingly, ensuring compliance with traffic signals.
 
 ### Emergency Service
-- Allows immediate halt of all vehicles in urgent scenarios, enhancing safety measures.
+- Provides a mechanism to halt all vehicles instantaneously in response to emergencies, prioritizing safety.
 
 ### Light Display
-- A visual representation of the current state of traffic lights for easy monitoring.
+- Visually represents the status of traffic lights, allowing for easy observation and monitoring.
 
 ### Ultimate Relay
-- The central hub that intelligently processes and relays commands to vehicles based on real-time traffic data and emergency signals.
+- Acts as a central command center that processes and relays information to vehicles, integrating real-time traffic conditions and emergency responses.
 
 ## Objective
-Through this project, we explore the integration of IoT and smart city concepts, demonstrating how technology can revolutionize traffic management and safety in an era of autonomous vehicles.
-
+The primary objective of this project is to test and deepen the understanding of MQTT protocol, particularly its application in managing concurrent services and systems in a simulated autonomous vehicle environment. It demonstrates how MQTT can be used for effective communication and control in complex systems, reflecting potential real-world applications in smart city infrastructure and autonomous
