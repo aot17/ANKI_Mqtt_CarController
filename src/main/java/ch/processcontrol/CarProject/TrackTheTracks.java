@@ -6,13 +6,14 @@ public class TrackTheTracks {
 
     private final MqttAsyncClient mqttClient;
     public static final String BROKER = "tcp://192.168.4.1:1883";
-    public static final String VEHICLEID = "f4c22c6c0382";
-    public static final String BASE_ID = "ATClient3";
+    public static final String VEHICLEID = "f4c22c6c0382"; // One Vehicle
+    public static final String BASE_ID = "ATClient_TrackTheTracks";
 
     public TrackTheTracks() throws MqttException {
         this.mqttClient = new MqttAsyncClient(BROKER, BASE_ID, null);
     }
 
+    // Connection and subscription handling
     public void connectToBroker() throws MqttException {
         mqttClient.connect().waitForCompletion();
         System.out.println("TrackTheTracks connected to broker: " + BROKER);
@@ -26,13 +27,6 @@ public class TrackTheTracks {
         String payload = "{\"type\":\"discover\", \"payload\":{ \"value\":true} }";
         mqttClient.publish(topic, payload.getBytes(), 0, false);
     }
-
-    public void connectToVehicle() throws MqttException { // TRY TO SUPPRESS THIS
-        String topic = "Anki/Vehicles/U/" + VEHICLEID + "/I";
-        String payload = "{\"type\":\"connect\", \"payload\":{ \"value\":true } }";
-        mqttClient.publish(topic, payload.getBytes(), 0, false);
-    }
-
     public void subscribeToTopics() throws MqttException {
         mqttClient.setCallback(new MQTTMessageHandler());
         String topic = "Anki/Vehicles/U/+/E/track";
@@ -41,6 +35,7 @@ public class TrackTheTracks {
         mqttClient.subscribe(topicW, 1);
     }
 
+    // Car turning logic
     private String isTurning(int leftWheelSpeed, int rightWheelSpeed) {
         int difference = leftWheelSpeed - rightWheelSpeed;
 
@@ -70,15 +65,12 @@ public class TrackTheTracks {
            if (trackTopic.equals(topic)) {
                 String json = receivedPayload;
                 int trackId = JsonUtils.getIntValue(json, "trackId");
-                int trackLocation = JsonUtils.getIntValue(json, "trackLocation");
-                String direction = JsonUtils.getStringValue(json, "direction");
-                System.out.println("trackId:" + trackId + "; track location:" + trackLocation + "; direction:" + direction);
+                System.out.println("trackId:" + trackId);
 
             } else if (wheelDistanceTopic.equals(topic)) {
                 String json = receivedPayload;
                 int speedLeft = JsonUtils.getIntValue(json, "left");
                 int speedRight = JsonUtils.getIntValue(json, "right");
-                //System.out.println("Speed left:" + speedLeft + "; Speed right: " + speedRight);
                 String turningDirection = isTurning(speedLeft, speedRight);
                 System.out.println("Turning direction: " + turningDirection);
             }
@@ -93,13 +85,19 @@ public class TrackTheTracks {
     public static void main(String[] args) throws Exception {
         TrackTheTracks trackTheTracks = new TrackTheTracks();
 
+        // 1. Connect to the broker.
         trackTheTracks.connectToBroker();
+        System.out.println("TrackTheTracks connected to broker: " + TrackTheTracks.BROKER);
+
+        // 2. Discover cars.
         trackTheTracks.carDiscovery();
-        trackTheTracks.connectToVehicle();
+
+        // 3. Subscribe to topics.
         trackTheTracks.subscribeToTopics();
 
         System.in.read();
 
+        // Disconnect from the broker when exiting
         trackTheTracks.disconnectFromBroker();
         System.out.println("TrackTheTracks disconnected from the broker.");
     }

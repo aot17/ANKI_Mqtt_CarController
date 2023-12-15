@@ -5,7 +5,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import java.io.IOException;
 
 public class RLServiceMain {
-    public static void main(String[] args) throws MqttException, IOException, InterruptedException {
+    public static void main(String[] args) throws MqttException, IOException {
         RLService rlService = new RLService();
 
         // 1. Connect to the broker.
@@ -15,10 +15,7 @@ public class RLServiceMain {
         // 2. Discover cars.
         rlService.carDiscovery();
 
-        // 3. Subscribe to topics.
-        rlService.subscribeToTopics();
-        System.out.println("RLService subscribed to ATC topic");
-
+        // 3. Lauch threads
         new Thread(() -> {
             try {
                 rlService.blinkVehicleForever(); // Blinking lights
@@ -29,7 +26,7 @@ public class RLServiceMain {
 
         new Thread(() -> {
             try {
-                rlService.steering(); // Changing speeds
+                rlService.steering(); // Drive
             } catch (MqttException | InterruptedException e) {
                 e.printStackTrace();
             }

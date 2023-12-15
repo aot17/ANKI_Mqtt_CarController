@@ -5,7 +5,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import java.io.IOException;
 
 public class CarServiceMain {
-    public static void main(String[] args) throws MqttException, IOException, InterruptedException {
+    public static void main(String[] args) throws MqttException, IOException {
         CarService carService = new CarService();
 
         // 1. Connect to the broker.
@@ -14,12 +14,9 @@ public class CarServiceMain {
 
         // 2. Discover cars.
         carService.carDiscovery();
+        System.out.println("CarService sent discovery");
 
-        // 3. Subscribe to topics.
-        carService.subscribeToTopics();
-        System.out.println("CarService subscribed to ATC topic");
-
-        // Launch threads for each exercise:
+        // 3. Launch threads for each exercise:
         new Thread(() -> {
             try {
                 carService.blinkVehicleForever(); // Blinking lights

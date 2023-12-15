@@ -10,14 +10,14 @@ public class LightDisplay implements MqttCallback {
     private MqttClient mqttClient;
 
     public static final String BROKER = "tcp://192.168.4.1:1883";
-    public static final String BASE_ID = "ATClient";
+    public static final String BASE_ID = "ATClient_LightDisplay";
 
     public LightDisplay() throws MqttException {
         // Setup MQTT Client
         mqttClient = new MqttClient(BROKER, BASE_ID, null);
         mqttClient.setCallback(this);
         mqttClient.connect();
-        mqttClient.subscribe("ATC/RedLight");
+        mqttClient.subscribe("ATC/I/TrafficLights");
 
         // Setup GUI
         frame = new JFrame("Traffic light");
@@ -32,10 +32,10 @@ public class LightDisplay implements MqttCallback {
     public void setLightColor(String color) {
         SwingUtilities.invokeLater(() -> {
             if ("GREENLight".equals(color)) {
-                lightLabel.setText("GREEN Light");
+                lightLabel.setText("GREEN");
                 lightLabel.setBackground(Color.GREEN);
             } else if ("REDLight".equals(color)) {
-                lightLabel.setText("RED Light");
+                lightLabel.setText("RED");
                 lightLabel.setBackground(Color.RED);
             }
             lightLabel.setOpaque(true);
@@ -50,7 +50,7 @@ public class LightDisplay implements MqttCallback {
     @Override
     public void messageArrived(String topic, MqttMessage message) throws Exception {
         String payload = new String(message.getPayload());
-        if (topic.equals("ATC/RedLight")) {
+        if (topic.equals("ATC/I/TrafficLights")) {
             // Extract the signal part of the payload
             if (payload.contains("REDLight")) {
                 setLightColor("REDLight");
