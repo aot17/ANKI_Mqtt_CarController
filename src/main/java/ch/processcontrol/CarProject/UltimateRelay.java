@@ -9,25 +9,30 @@ import java.util.List;
 public class UltimateRelay {
 
     private final MqttAsyncClient mqttClient;
-    public static final String BROKER = "tcp://192.168.4.1:1883";
-    private List<String> activeVehicles = Arrays.asList("cec233dec1cb", "f4c22c6c0382", "cb443e1e4025", "d98ebab7c206");
-    //private List<String> activeVehicles = Arrays.asList("f4c22c6c0382");
-
     public static final String BASE_ID = "ATClient_UltimateRelay";
     private volatile boolean isEmergency = false;
 
 
     public UltimateRelay() throws MqttException {
-        this.mqttClient = new MqttAsyncClient(BROKER, BASE_ID, null);
+        this.mqttClient = new MqttAsyncClient(Data.BROKER, BASE_ID, null);
     }
 
     // Connection and subscription handling
     public void connectToBroker() throws MqttException {
         mqttClient.connect().waitForCompletion();
-        System.out.println("Emergency Service Connected to broker: " + BROKER);
+        System.out.println("Emergency Service Connected to broker: " + Data.BROKER);
     }
     public void disconnectFromBroker() throws MqttException {
         mqttClient.disconnect();
+    }
+
+    public void disconnectFromCars()throws MqttException {
+        for (String vehicleId : Data.activeVehicles) {
+            String topic = "Anki/Vehicles/U/" + vehicleId +"/I" ;
+            String payload = "{\"type\":\"connect\", \"payload\":{ \"value\":false } }";
+            mqttClient.publish(topic, payload.getBytes(), 0, false);
+            System.out.println("Deconnection request sent to vehicle: " + vehicleId);
+        }
     }
 
     public void carDiscovery () throws MqttException {
@@ -37,12 +42,15 @@ public class UltimateRelay {
     }
 
     public void connectToVehicle() throws MqttException {
-        for (String vehicleId : activeVehicles) {
-            String topic = "Anki/Vehicles/U/" + vehicleId +"/I" ;
+        for (String vehicleId : Data.activeVehicles) {
+            String topic = "Anki/Vehicles/U/" + vehicleId + "/I";
             String payload = "{\"type\":\"connect\", \"payload\":{ \"value\":true } }";
             mqttClient.publish(topic, payload.getBytes(), 0, false);
             System.out.println("Connection request sent to vehicle: " + vehicleId);
-        }}
+        }
+    }
+
+
     public void subscribeToTopics() throws MqttException {
         mqttClient.setCallback(new MQTTMessageHandler());
         String topic1 = "ATC/I/Relay";
@@ -62,6 +70,7 @@ public class UltimateRelay {
             isEmergency = false;
         }
     }
+
     // Identify blinking messages
     private boolean isBlinkingLightCommand(String payload) {
         return payload.contains("\"type\":\"lights\"");
@@ -84,7 +93,7 @@ public class UltimateRelay {
             updateIsEmergencyStatus(receivedPayload);
             System.out.println(isEmergency);
 
-            for (String vehicleId : activeVehicles) {
+            for (String vehicleId : Data.activeVehicles) {
                 String carControlTopic = "Anki/Vehicles/U/" + vehicleId + "/I";
                 if (isBlinkingLightCommand(receivedPayload)) { // always blinking
                     mqttClient.publish(carControlTopic, receivedPayload.getBytes(), 0, false);
@@ -115,6 +124,18 @@ public class UltimateRelay {
 
         // 3. Connect to the vehicle.
         ultimateRelay.connectToVehicle();
+
+
+        //Add Hook when shutting down program
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                try {
+                    ultimateRelay.disconnectFromCars();
+                } catch (MqttException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
 
         // 4. Subscribe to topics.
         ultimateRelay.subscribeToTopics();

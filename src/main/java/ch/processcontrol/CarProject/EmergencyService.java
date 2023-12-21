@@ -8,12 +8,11 @@ import java.io.IOException;
 public class EmergencyService {
 
     private final MqttAsyncClient mqttClient;
-    public static final String BROKER = "tcp://192.168.4.1:1883";
     public static final String BASE_ID = "ATClient_EmergencyService";
     private volatile boolean isEmergency = false;
 
     public EmergencyService() throws MqttException {
-        this.mqttClient = new MqttAsyncClient(BROKER, BASE_ID, null);
+        this.mqttClient = new MqttAsyncClient(Data.BROKER, BASE_ID, null);
     }
 
     // Connections handling
@@ -50,7 +49,7 @@ public class EmergencyService {
 
         // Connect to the broker.
         emergencyService.connectToBroker();
-        System.out.println("EmergencyService connected to broker: " + EmergencyService.BROKER);
+        System.out.println("EmergencyService connected to broker: " + Data.BROKER);
 
         // Loop to toggle emergency status on Enter key press.
         System.out.println("Press Enter to toggle emergency status. Type 'exit' to quit.");

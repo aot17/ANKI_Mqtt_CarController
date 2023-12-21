@@ -5,18 +5,16 @@ import org.eclipse.paho.client.mqttv3.*;
 public class TrackTheTracks {
 
     private final MqttAsyncClient mqttClient;
-    public static final String BROKER = "tcp://192.168.4.1:1883";
-    public static final String VEHICLEID = "f4c22c6c0382"; // One Vehicle
     public static final String BASE_ID = "ATClient_TrackTheTracks";
 
     public TrackTheTracks() throws MqttException {
-        this.mqttClient = new MqttAsyncClient(BROKER, BASE_ID, null);
+        this.mqttClient = new MqttAsyncClient(Data.BROKER, BASE_ID, null);
     }
 
     // Connection and subscription handling
     public void connectToBroker() throws MqttException {
         mqttClient.connect().waitForCompletion();
-        System.out.println("TrackTheTracks connected to broker: " + BROKER);
+        System.out.println("TrackTheTracks connected to broker: " + Data.BROKER);
     }
 
     public void disconnectFromBroker() throws MqttException {
@@ -59,8 +57,8 @@ public class TrackTheTracks {
         public void messageArrived(String topic, MqttMessage message) throws Exception {
             String receivedPayload = new String(message.getPayload());
             //System.out.printf("Topic: (%s) Payload: (%s) \n", topic, receivedPayload);
-            String trackTopic = "Anki/Vehicles/U/" + VEHICLEID + "/E/track";
-            String wheelDistanceTopic = "Anki/Vehicles/U/" + VEHICLEID + "/E/wheelDistance";
+            String trackTopic = "Anki/Vehicles/U/" + Data.VEHICLEID + "/E/track";
+            String wheelDistanceTopic = "Anki/Vehicles/U/" + Data.VEHICLEID + "/E/wheelDistance";
 
            if (trackTopic.equals(topic)) {
                 String json = receivedPayload;
@@ -87,7 +85,7 @@ public class TrackTheTracks {
 
         // 1. Connect to the broker.
         trackTheTracks.connectToBroker();
-        System.out.println("TrackTheTracks connected to broker: " + TrackTheTracks.BROKER);
+        System.out.println("TrackTheTracks connected to broker: " + Data.BROKER);
 
         // 2. Discover cars.
         trackTheTracks.carDiscovery();

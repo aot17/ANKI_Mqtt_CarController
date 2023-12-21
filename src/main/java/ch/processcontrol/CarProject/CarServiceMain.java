@@ -10,7 +10,7 @@ public class CarServiceMain {
 
         // 1. Connect to the broker.
         carService.connectToBroker();
-        System.out.println("CarService connected to broker: " + CarService.BROKER);
+        System.out.println("CarService connected to broker: " + Data.BROKER);
 
         // 2. Discover cars.
         carService.carDiscovery();

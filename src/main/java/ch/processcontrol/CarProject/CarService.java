@@ -4,12 +4,11 @@ import org.eclipse.paho.client.mqttv3.*;
 
 public class CarService {
     private final MqttClient mqttClient;
-    public static final String BROKER = "tcp://192.168.4.1:1883";
     public static final String BASE_ID = "ATClient_CarService";
 
     // Connections and subscription basics
     public CarService() throws MqttException {
-        this.mqttClient = new MqttClient(BROKER, BASE_ID, null);
+        this.mqttClient = new MqttClient(Data.BROKER, BASE_ID, null);
     }
 
     public void connectToBroker() throws MqttException {

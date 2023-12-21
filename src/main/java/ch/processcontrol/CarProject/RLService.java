@@ -4,11 +4,10 @@ import org.eclipse.paho.client.mqttv3.*;
 
 public class RLService {
     private final MqttClient mqttClient;
-    public static final String BROKER = "tcp://192.168.4.1:1883";
     public static final String BASE_ID = "ATClient_RLService";
 
     public RLService() throws MqttException {
-        this.mqttClient = new MqttClient(BROKER, BASE_ID, null);
+        this.mqttClient = new MqttClient(Data.BROKER, BASE_ID, null);
     }
 
     // Connection handling

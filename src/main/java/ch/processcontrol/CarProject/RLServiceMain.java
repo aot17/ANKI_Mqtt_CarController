@@ -10,7 +10,7 @@ public class RLServiceMain {
 
         // 1. Connect to the broker.
         rlService.connectToBroker();
-        System.out.println("RLService connected to broker: " + RLService.BROKER);
+        System.out.println("RLService connected to broker: " + Data.BROKER);
 
         // 2. Discover cars.
         rlService.carDiscovery();

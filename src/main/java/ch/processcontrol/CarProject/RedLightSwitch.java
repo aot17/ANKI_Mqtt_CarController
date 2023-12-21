@@ -5,11 +5,10 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 
 public class RedLightSwitch {
     private final MqttAsyncClient mqttClient;
-    public static final String BROKER = "tcp://192.168.4.1:1883";
     public static final String BASE_ID = "ATClient_RedLightSwitch";
 
     public RedLightSwitch() throws MqttException {
-        this.mqttClient = new MqttAsyncClient(BROKER, BASE_ID, null);
+        this.mqttClient = new MqttAsyncClient(Data.BROKER, BASE_ID, null);
     }
 
     // Connections handling
@@ -46,7 +45,7 @@ public class RedLightSwitch {
 
         // 1. Connect to the broker.
         redLightSwitch.connectToBroker();
-        System.out.println("RedLightSwitch connected to broker: " + RedLightSwitch.BROKER);
+        System.out.println("RedLightSwitch connected to broker: " + Data.BROKER);
 
         // 2. Initiate RedLightSignal
         redLightSwitch.redLightSignal();

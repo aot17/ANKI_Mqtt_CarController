@@ -9,12 +9,11 @@ public class LightDisplay implements MqttCallback {
     private JLabel lightLabel;
     private MqttClient mqttClient;
 
-    public static final String BROKER = "tcp://192.168.4.1:1883";
     public static final String BASE_ID = "ATClient_LightDisplay";
 
     public LightDisplay() throws MqttException {
         // Setup MQTT Client
-        mqttClient = new MqttClient(BROKER, BASE_ID, null);
+        mqttClient = new MqttClient(Data.BROKER, BASE_ID, null);
         mqttClient.setCallback(this);
         mqttClient.connect();
         mqttClient.subscribe("ATC/I/TrafficLights");

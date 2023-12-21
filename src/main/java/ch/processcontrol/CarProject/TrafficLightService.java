@@ -9,21 +9,18 @@ import java.util.List;
 public class TrafficLightService {
 
     private final MqttAsyncClient mqttClient;
-    public static final String BROKER = "tcp://192.168.4.1:1883";
-    private List<String> activeVehicles = Arrays.asList("cec233dec1cb", "f4c22c6c0382", "cb443e1e4025", "d98ebab7c206");
-    //private List<String> activeVehicles = Arrays.asList("f4c22c6c0382", "d11d2fea5c74", "d205effe02cb");
     public static final String BASE_ID = "ATClient_TrafficLightService";
     private volatile boolean isRedLight = false;
     private final int REDLIGHTTRACKID = 23;
 
     public TrafficLightService() throws MqttException {
-        this.mqttClient = new MqttAsyncClient(BROKER, BASE_ID, null);
+        this.mqttClient = new MqttAsyncClient(Data.BROKER, BASE_ID, null);
     }
 
     // Connection and subscription handling
     public void connectToBroker() throws MqttException {
         mqttClient.connect().waitForCompletion();
-        System.out.println("Emergency Service Connected to broker: " + BROKER);
+        System.out.println("Emergency Service Connected to broker: " + Data.BROKER);
     }
     public void disconnectFromBroker() throws MqttException {
         mqttClient.disconnect();
@@ -36,7 +33,7 @@ public class TrafficLightService {
     }
 
     public void connectToVehicle() throws MqttException {
-        for (String vehicleId : activeVehicles) {
+        for (String vehicleId : Data.activeVehicles) {
             String topic = "Anki/Vehicles/U/" + vehicleId +"/I" ;
             String payload = "{\"type\":\"connect\", \"payload\":{ \"value\":true } }";
             mqttClient.publish(topic, payload.getBytes(), 0, false);
@@ -49,9 +46,7 @@ public class TrafficLightService {
         String topic4 = "Anki/Vehicles/U/+/E/track";
         mqttClient.subscribe(topic1,1);
         mqttClient.subscribe(topic2,1);
-        //mqttClient.subscribe(topic3,1);
         mqttClient.subscribe(topic4,1);
-
     }
 
     // Update redlight status based on received message
@@ -88,9 +83,9 @@ public class TrafficLightService {
             updateRedLightStatus(receivedPayload);
             System.out.println("Redlight status :" + isRedLight);
 
-            for (String vehicleId:activeVehicles) {
+            for (String vehicleId : Data.activeVehicles) {
                 // Filer logic
-                if (activeVehicles.contains(vehicleInTopic) && isRedLight && trackId == REDLIGHTTRACKID) { // stop vehicle if it is at the traffic light and it is red
+                if (Data.activeVehicles.contains(vehicleInTopic) && isRedLight && trackId == REDLIGHTTRACKID) { // stop vehicle if it is at the traffic light and it is red
                     System.out.println("VEHICLEID_topic:" + vehicleInTopic);
                     String StopPayload = "{\"type\":\"speed\",\"payload\":{\"velocity\":0,\"acceleration\":1200}}";
                     String carControlTopic = "Anki/Vehicles/U/" + vehicleInTopic + "/I";
@@ -120,7 +115,7 @@ public class TrafficLightService {
 
         // 1. Connect to the broker.
         trafficLightService.connectToBroker();
-        System.out.println("trafficLightService connected to broker: " + trafficLightService.BROKER);
+        System.out.println("trafficLightService connected to broker: " + Data.BROKER);
 
         // 2. Discover cars.
         trafficLightService.carDiscovery();
